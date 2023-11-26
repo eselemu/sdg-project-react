@@ -1,5 +1,7 @@
 import React from "react";
 
+import './Forum.css';
+
 function ModalPost(props) {
 	let username = props.username;
 	return (
@@ -16,7 +18,7 @@ function ModalPost(props) {
                 <div className="container">
                   <div className="row">
                     <div className="col-2">
-                      <img src={process.env.PUBLIC_URL + '/imgs/forum/profile-pic.jpg'} alt="Default profile picture" className="pic-comment" />
+                      <img src={process.env.PUBLIC_URL + '/imgs/forum/profile-pic.jpg'} alt="Default profile" className="pic-comment" />
                     </div>
                     <div className="col-10">
                       <h5>{username}</h5>

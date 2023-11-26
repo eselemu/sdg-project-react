@@ -1,15 +1,33 @@
 import React from "react";
 
 import ModalPost from "./ModalPost";
+import Post from "./Post";
 
 import './Forum.css';
+import posts from './posts'
 
 function ForumMain() {
 	let username = "eselemu";
-	let currTopic = "HEALTH"
+	let currTopic = "HEALTH";
+
+	function mapPosts() {
+    if (posts) {
+      return posts.map((post) => (
+        <Post
+          post={post} 
+					currTopic = {currTopic}/>
+      ));
+    }
+    return undefined;
+  }
+
+	let renderedPosts = mapPosts();
+
 	return (
 		<div className="forumMain">
+
       <ModalPost username={username} />
+
       <div className="container containerVisual">
         <div className="row">
           <div className="col-7 col-sm-10">
@@ -34,6 +52,7 @@ function ForumMain() {
           </div>
         </div>
       </div>
+			{renderedPosts}
     </div>
 	);
 }
