@@ -2,37 +2,39 @@ import React from "react";
 
 import ModalPost from "./ModalPost";
 
+import './Forum.css';
+
 function ForumMain() {
 	let username = "eselemu";
 	let currTopic = "HEALTH"
 	return (
-		<div>
-			<ModalPost username={username} />
-			<div class="container containerVisual">
-				<div class="row">
-					<div class="col-7 col-sm-10">
-						<form action="/searchTopic" method="get">
-							<div class="input-group mb-3">
-								<input type="text" name="topic" class="form-control" placeholder="Topic" aria-label="Topic"
-									aria-describedby="button-addon2"/>
-									<button type="submit" class="btn btn-labeled btn-success btn-search">
-										<span class="btn-label"><i class="fa fa-search"></i></span>Search</button>
-							</div>
-						</form>
-					</div>
-					<div class="col-5 col-sm-2 right-align">
-						<button type="button" class="btn btn-primary btn-addpost" data-bs-toggle="modal"
-							data-bs-target="#exampleModal">NEW
-							POST</button>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-12">
-						<h1>{currTopic}</h1>
-					</div>
-				</div>
-			</div>
-		</div>
+		<div className="forumMain">
+      <ModalPost username={username} />
+      <div className="container containerVisual">
+        <div className="row">
+          <div className="col-7 col-sm-10">
+            <form action="/searchTopic" method="get">
+              <div className="input-group mb-3">
+                <input type="text" name="topic" className="form-control" placeholder="Topic" aria-label="Topic" aria-describedby="button-addon2" />
+                <button type="submit" className="btn btn-labeled btn-success btn-search">
+                  <span className="btn-label"><i className="fa fa-search"></i></span>Search
+                </button>
+              </div>
+            </form>
+          </div>
+          <div className="col-5 col-sm-2 right-align">
+            <button type="button" className="btn btn-primary btn-addpost" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              NEW POST
+            </button>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            <h1>{currTopic}</h1>
+          </div>
+        </div>
+      </div>
+    </div>
 	);
 }
 
