@@ -52,7 +52,9 @@ function ForumMain() {
           </div>
         </div>
       </div>
+
 			{renderedPosts}
+			
     </div>
 	);
 }
