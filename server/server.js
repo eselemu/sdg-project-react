@@ -44,7 +44,14 @@ const PostSchema = new mongoose.Schema({
   createdAt: String // or Date
 });
 PostSchema.set("strictQuery", true); 
+
+const TopicSchema = new mongoose.Schema({
+  topic: String,
+});
+TopicSchema.set("strictQuery", true); 
+
 const Post = mongoose.model("Post", PostSchema);
+const Topic = mongoose.model("Topic", TopicSchema);
 
 const userFilePath = "./data/user.json";
 //const user = require(userFilePath);
@@ -131,7 +138,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 //Filtered posts depending on the topic
-var filteredPosts;
 
 app.route("/forum")
   .get((req, res) => {
@@ -141,12 +147,12 @@ app.route("/forum")
     res.render("forum", { posts: filteredPosts, username: req.session.username, currTopic: currTopic, topics: topics.topics });
   });
 
-app.post('/postForum', upload.single('image'), (req, res) => {
+app.post('/postForum', upload.single('image'), async (req, res) => {
   const topic = req.body.topic.toUpperCase();
   const content = req.body.content;
   const author = req.body.author;
   //Creation of json object with the atributes of the post
-  const post = new Post({
+  const newPost = new Post({
     author: author,
     topic: topic,
     content: content,
@@ -155,9 +161,27 @@ app.post('/postForum', upload.single('image'), (req, res) => {
     createdAt: moment(new Date()).format('MMM DD, YYYY, HH:mm:ss'),//Date of creation, it is formatted using moment (In order to look nicer and more readable)
   });
 
-  console.log(post);
-  post.save();
-  res.status(200).json(post);
+  
+  var existingTopic = await Topic.findOne({ topic: topic }).exec();
+
+  if(!existingTopic){
+    const newTopic = new Topic({
+      topic: topic,
+    });
+    newTopic.save();
+  }
+
+  console.log(newPost);
+  newPost.save();
+  res.status(200).json(newPost);
+});
+
+app.post('/getPosts', async (req, res) => {
+  let postsDB = await Post.find({}).exec();
+  if(!postsDB && postsDB === 0){
+    res.status(401).send("Error while extracting posts from database");
+  }
+  res.status(200).json(postsDB);
 });
 
 //Endpoint to submit a comment to a post
