@@ -184,58 +184,6 @@ app.post('/getPosts', async (req, res) => {
   res.status(200).json(postsDB);
 });
 
-//Endpoint to submit a comment to a post
-app.post('/postComment', (req, res) => {
-  //The user needs to be logged
-  if (req.session.username == undefined) {
-    res.status(401).send("Not logged user");
-  }
-  else {
-    //Get the topic and the filtered posts from the post to be commented
-    currTopic = req.body.currTopic;
-    filteredPosts = posts.filter(post => post.topic === currTopic);
-    //Get the content of the comment and the index of the commented post
-    const content = req.body.postComment;
-    const indexPost = req.body.indexPost;
-
-    //Creation of the json object with the attributes of the comment
-    const comment = {
-      author: req.session.username,
-      text: content,
-      createdAt: moment(new Date()).format('MMM DD, YYYY, HH:mm:ss'), // Comment creation timestamp
-    };
-    //Set the comment in the original array of posts
-    posts.forEach(post => {
-      if (filteredPosts[indexPost] == post) {
-        post.comments.push(comment);
-      }
-    });
-    //Write updated posts json file with added comment
-    fs.writeFile(postsFilePath, JSON.stringify(posts, null, 2), 'utf8', (err) => {
-      if (err) {
-        console.error('Error writing posts:', err);
-        return res.status(500).send('Server Error');
-      }
-
-      res.redirect('/forum');
-    });
-  }
-});
-//Enpoint to search topic
-app.route("/searchTopic")
-  .get((req, res) => {
-    const topic = req.query.topic.toUpperCase();
-    //If the topic exists, we set the current topic to the searched one
-    if (topics.topics.includes(topic)) {
-      currTopic = topic;
-    }
-    //Else the default topic will be shown
-    else {
-      currTopic = "HEALTH"
-    }
-    res.redirect('/forum');
-  });
-
 //const news = require('./news.json');
 
 app.route("/newsletter")
