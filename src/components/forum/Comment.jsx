@@ -11,7 +11,7 @@ function Comment(props) {
 			</div>
 			<div className="col-10 col-xl-11">
 				<h5>{comment.author}</h5>
-				<p>{comment.text}</p>
+				<p>{comment.content}</p>
 			</div>
 		</div>
 	);

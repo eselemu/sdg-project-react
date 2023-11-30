@@ -122,9 +122,6 @@ app.route("/login")
 // Serve images from the "uploads" directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-//Current and default topic of the posts section
-var currTopic = "HEALTH";
-
 // Configure Multer for image uploads
 const storage = multer.diskStorage({
   destination: 'uploads/', // Specify the directory for storing uploaded images
@@ -176,8 +173,38 @@ app.post('/postForum', upload.single('image'), async (req, res) => {
   res.status(200).json(newPost);
 });
 
+app.post('/postComment', async (req, res) => {
+  const author = req.body.author;
+  const content = req.body.content;
+  const postId = req.body.post._id; // Assuming you're sending the post's id in the request
+  const newComment = {
+    author: author,
+    content: content,
+    createdAt: moment(new Date()).format('MMM DD, YYYY, HH:mm:ss'),
+  };
+
+  try {
+    // Find the post by id and update it
+    const updatedPost = await Post.findOneAndUpdate(
+      { _id: postId }, // filter
+      { $push: { comments: newComment } }, // update
+      { new: true } // options
+    ).exec();
+
+    if (!updatedPost) {
+      res.status(404).send("Post not found");
+    } else {
+      res.status(200).json(updatedPost);
+    }
+  } catch (err) {
+    res.status(500).send("Error while updating post: " + err.message);
+  }
+});
+
+
 app.post('/getPosts', async (req, res) => {
-  let postsDB = await Post.find({}).exec();
+  const topic = req.body.topic;
+  let postsDB = await Post.find({topic: topic}).sort({createdAt: -1}).exec();
   if(!postsDB && postsDB === 0){
     res.status(401).send("Error while extracting posts from database");
   }

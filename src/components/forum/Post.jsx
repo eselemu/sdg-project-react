@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from 'axios';
 
 import Comment from "./Comment";
 
@@ -6,7 +7,27 @@ import './Forum.css';
 
 function Post(props) {
 	let post = props.post;
-	let currTopic = props.currTopic;
+
+	const [commentContent, setCommentContent] = useState("");
+
+	function fieldListener(event){
+		setCommentContent(event.target.value);
+	  }
+
+	async function commentSubmit(event){
+		event.preventDefault();
+		setCommentContent("");
+		try {
+			const response = await axios.post('/postComment', { author: props.username, content: commentContent, post: post });
+			if (response.status === 200) {
+				props.reloadPosts();
+			} else {
+			  console.error("Error while extracting posts from database: " + response.status);
+			}
+		  } catch (err) {
+			console.error("Error in axios call: " + err.message);
+		  }
+	}
 
 	function mapComments() {
 		if (post.comments) {
@@ -35,7 +56,7 @@ function Post(props) {
 						{
 							post.image != null && (
 								<div className="col-12 d-flex justify-content-center align-items-center">
-									<img src={process.env.PUBLIC_URL + '/imgs/forum/profile-pic.jpg'} alt="Default profile" className="img-post" />
+									<img src={post.image} alt="Default profile" className="img-post" />
 								</div>
 							)
 						}
@@ -48,10 +69,8 @@ function Post(props) {
 							<img src={process.env.PUBLIC_URL + '/imgs/forum/profile-pic.jpg'} alt="Default profile" className="pic-comment" />
 						</div>
 						<div className="col-10 col-xl-11">
-							<form action="/postComment" method="POST">
-								<input name="postComment" className="form-control form-control-sm" type="text" placeholder="Write a public comment" aria-label=".form-control-sm example" />
-								<input type="hidden" name="indexPost" value={0} />
-								<input type="hidden" name="currTopic" value={currTopic} />
+							<form action="/" method="POST" onSubmit={commentSubmit}>
+								<input name="postComment" className="form-control form-control-sm" type="text" placeholder="Write a public comment" aria-label=".form-control-sm example" onChange={fieldListener} value={commentContent}/>
 								<button type="submit" className="btn btn-primary btn-addpost" hidden>PUBLISH</button>
 							</form>
 						</div>

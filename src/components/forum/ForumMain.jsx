@@ -8,35 +8,53 @@ import './Forum.css';
 
 function ForumMain() {
   let username = "eselemu";
-  let currTopic = "HEALTH";
-
+  const [shownTopic, setShownTopic] = useState("HEALTH");
+  const [currTopic, setCurrTopic] = useState("HEALTH");
   const [posts, setPosts] = useState([]);
 
-  useEffect(() => {
-    const getPosts = async () => {
-      try {
-        const response = await axios.post('/getPosts');
-        if (response.status === 200) {
-          setPosts(response.data);
-        } else {
-          console.error("Error while extracting posts from database: " + response.status);
-        }
-      } catch (err) {
-        console.error("Error in axios call: " + err.message);
+  const getPosts = async () => {
+    try {
+      const response = await axios.post('/getPosts', { topic: currTopic });
+      if (response.status === 200) {
+        setPosts(response.data);
+      } else {
+        console.error("Error while extracting posts from database: " + response.status);
       }
-    };
+    } catch (err) {
+      console.error("Error in axios call: " + err.message);
+    }
+  };
+
+  useEffect(() => {
     getPosts();
   }, []);
+
 
   function mapPosts() {
     if (posts) {
       return posts.map((post) => (
         <Post
           post={post}
-          currTopic={currTopic} />
+          currTopic={currTopic} 
+          username={username}
+          reloadPosts = {getPosts}/>
       ));
     }
     return undefined;
+  }
+
+  function resetTopicForum(){
+    getPosts();
+    setShownTopic(currTopic);
+  }
+
+  function handleSearchSubmit(event){
+    event.preventDefault();
+    resetTopicForum();
+  }
+
+  function handleTopicChange(event){
+    setCurrTopic(event.target.value.toUpperCase());
   }
 
   let renderedPosts = mapPosts();
@@ -44,14 +62,14 @@ function ForumMain() {
   return (
     <div className="forumMain">
 
-      <ModalPost username={username} />
+      <ModalPost username={username} setTopic={setCurrTopic} reloadPosts = {resetTopicForum}/>
 
       <div className="container containerVisual">
         <div className="row">
           <div className="col-7 col-sm-10">
-            <form action="/searchTopic" method="get">
+            <form method="get" onSubmit={handleSearchSubmit}>
               <div className="input-group mb-3">
-                <input type="text" name="topic" className="form-control" placeholder="Topic" aria-label="Topic" aria-describedby="button-addon2" />
+                <input type="text" name="topic" className="form-control" placeholder="Topic" aria-label="Topic" aria-describedby="button-addon2" onChange={handleTopicChange} value={currTopic}/>
                 <button type="submit" className="btn btn-labeled btn-success btn-search">
                   <span className="btn-label"><i className="fa fa-search"></i></span>Search
                 </button>
@@ -66,7 +84,7 @@ function ForumMain() {
         </div>
         <div className="row">
           <div className="col-12">
-            <h1>{currTopic}</h1>
+            <h1>{shownTopic}</h1>
           </div>
         </div>
       </div>
