@@ -1,30 +1,48 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
 
 import ModalPost from "./ModalPost";
 import Post from "./Post";
 
 import './Forum.css';
-import posts from './posts'
 
 function ForumMain() {
-	let username = "eselemu";
-	let currTopic = "HEALTH";
+  let username = "eselemu";
+  let currTopic = "HEALTH";
 
-	function mapPosts() {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const getPosts = async () => {
+      try {
+        const response = await axios.post('/getPosts');
+        if (response.status === 200) {
+          setPosts(response.data);
+        } else {
+          console.error("Error while extracting posts from database: " + response.status);
+        }
+      } catch (err) {
+        console.error("Error in axios call: " + err.message);
+      }
+    };
+    getPosts();
+  }, []);
+
+  function mapPosts() {
     if (posts) {
       return posts.map((post) => (
         <Post
-          post={post} 
-					currTopic = {currTopic}/>
+          post={post}
+          currTopic={currTopic} />
       ));
     }
     return undefined;
   }
 
-	let renderedPosts = mapPosts();
+  let renderedPosts = mapPosts();
 
-	return (
-		<div className="forumMain">
+  return (
+    <div className="forumMain">
 
       <ModalPost username={username} />
 
@@ -52,9 +70,11 @@ function ForumMain() {
           </div>
         </div>
       </div>
-			{renderedPosts}
+
+      {renderedPosts}
+
     </div>
-	);
+  );
 }
 
 export default ForumMain;
