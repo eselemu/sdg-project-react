@@ -1,0 +1,40 @@
+:root{
+    --principal:#b0e783;
+    --complementario:#ba83e7;
+    --fakeWhite:#fffff6;
+    --lightestgreen:#eaf8d5;
+    --bruhgreen:#d3f2b4;
+    --footergreen:#81b757;
+    --extra:#63993a;
+    font-size: 16px;
+}
+.mainIndex {
+    font-size: 16px;
+    /* background-color: #eaf8d5; */
+    font-family: 'Roboto', sans-serif;
+}
+
+.indexContainer h2 {
+    color: #81b757;
+    font-size: 24px;
+    margin-top: 20px;
+}
+
+.indexContainer p {
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.mainContainer {
+    position: relative;
+    max-width: 800px;
+    background-color: #fffff6;
+}
+
+/*Estilos responsivos*/
+.indexContainer img {
+    max-width: 25%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
