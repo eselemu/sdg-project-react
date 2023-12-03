@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+import { useSearchParams } from 'react-router-dom';
 
 import ModalPost from "./ModalPost";
 import Post from "./Post";
@@ -9,12 +10,15 @@ import './Forum.css';
 function ForumMain() {
   let username = "eselemu";
   const [shownTopic, setShownTopic] = useState("HEALTH");
-  const [currTopic, setCurrTopic] = useState("HEALTH");
   const [posts, setPosts] = useState([]);
+  const [searchParams] = useSearchParams();
+
+  // Use a state to track the current topic
+  const [currTopic, setCurrTopic] = useState(searchParams.get('topic') || "HEALTH");
 
   const getPosts = async () => {
     try {
-      const response = await axios.post('/getPosts', { topic: currTopic });
+      const response = await axios.post('/getPosts', { topic: currTopic.toUpperCase() });
       if (response.status === 200) {
         setPosts(response.data);
       } else {
@@ -27,6 +31,7 @@ function ForumMain() {
 
   useEffect(() => {
     getPosts();
+    setShownTopic(currTopic);
   }, []);
 
 
@@ -60,38 +65,39 @@ function ForumMain() {
   let renderedPosts = mapPosts();
 
   return (
-    <div className="forumMain">
 
-      <ModalPost username={username} setTopic={setCurrTopic} reloadPosts = {resetTopicForum}/>
+      <div className="forumMain">
 
-      <div className="container containerVisual">
-        <div className="row">
-          <div className="col-7 col-sm-10">
-            <form method="get" onSubmit={handleSearchSubmit}>
-              <div className="input-group mb-3">
-                <input type="text" name="topic" className="form-control" placeholder="Topic" aria-label="Topic" aria-describedby="button-addon2" onChange={handleTopicChange} value={currTopic}/>
-                <button type="submit" className="btn btn-labeled btn-success btn-search">
-                  <span className="btn-label"><i className="fa fa-search"></i></span>Search
-                </button>
-              </div>
-            </form>
+        <ModalPost username={username} setTopic={setCurrTopic} reloadPosts = {resetTopicForum}/>
+
+        <div className="container containerVisual">
+          <div className="row">
+            <div className="col-7 col-sm-10">
+              <form method="get" onSubmit={handleSearchSubmit}>
+                <div className="input-group mb-3">
+                  <input type="text" name="topic" className="form-control" placeholder="Topic" aria-label="Topic" aria-describedby="button-addon2" onChange={handleTopicChange} value={currTopic}/>
+                  <button type="submit" className="btn btn-labeled btn-success btn-search">
+                    <span className="btn-label"><i className="fa fa-search"></i></span>Search
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div className="col-5 col-sm-2 right-align">
+              <button type="button" className="btn btn-primary btn-addpost" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                NEW POST
+              </button>
+            </div>
           </div>
-          <div className="col-5 col-sm-2 right-align">
-            <button type="button" className="btn btn-primary btn-addpost" data-bs-toggle="modal" data-bs-target="#exampleModal">
-              NEW POST
-            </button>
+          <div className="row">
+            <div className="col-12">
+              <h1>{shownTopic}</h1>
+            </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col-12">
-            <h1>{shownTopic}</h1>
-          </div>
-        </div>
+
+        {renderedPosts}
+
       </div>
-
-      {renderedPosts}
-
-    </div>
   );
 }
 

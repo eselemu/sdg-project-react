@@ -31,7 +31,7 @@ mongoose.connect(mongoPostUrl, { useNewUrlParser: true, useUnifiedTopology: true
 const CommentSchema = new mongoose.Schema({
   author: String,
   content: String,
-  createdAt: String // or Date
+  createdAt: { type: Date, default: Date.now } // or Date
 });
 CommentSchema.set("strictQuery", true); 
 
@@ -41,7 +41,7 @@ const PostSchema = new mongoose.Schema({
   content: String,
   image: String,
   comments: [CommentSchema], // This is an array of Comment subdocuments
-  createdAt: String // or Date
+  createdAt: { type: Date, default: Date.now } // or Date
 });
 PostSchema.set("strictQuery", true); 
 
@@ -155,7 +155,6 @@ app.post('/postForum', upload.single('image'), async (req, res) => {
     content: content,
     image: req.file ? `/uploads/${req.file.filename}` : null,//Here if a file is received then it will save in the json object the route to teh alredy uploaded img in uploads
     comments: [],//Comments array, by default the post doesnt have any
-    createdAt: moment(new Date()).format('MMM DD, YYYY, HH:mm:ss'),//Date of creation, it is formatted using moment (In order to look nicer and more readable)
   });
 
   
@@ -180,7 +179,6 @@ app.post('/postComment', async (req, res) => {
   const newComment = {
     author: author,
     content: content,
-    createdAt: moment(new Date()).format('MMM DD, YYYY, HH:mm:ss'),
   };
 
   try {

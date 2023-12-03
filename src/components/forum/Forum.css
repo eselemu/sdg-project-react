@@ -14,7 +14,6 @@
 }
 .forumMain{
     font-family: 'Roboto', sans-serif;
-    background: linear-gradient(150deg, var(--extra), var(--bruhgreen), var(--fakeWhite));
     min-height: 100vh;
     display: flex;
     flex-direction: column;

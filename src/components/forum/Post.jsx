@@ -39,6 +39,11 @@ function Post(props) {
 		return undefined;
 	}
 
+	function formatDate(dateString) {
+		const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+		return new Intl.DateTimeFormat('en-US', options).format(new Date(dateString));
+	  }
+
 	let renderedComments = mapComments();
 	return (
 		<div>
@@ -50,7 +55,7 @@ function Post(props) {
 						</div>
 						<div class="post-body col-12 col-xl-11 col-sm-10">
 							<h2>{post.author}</h2>
-							<p>{post.createdAt}</p>
+							<p>{formatDate(post.createdAt)}</p>
 							<h5>{post.content}</h5>
 						</div>
 						{

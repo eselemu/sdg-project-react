@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 import './Forum.css';
 
 function ModalPost(props) {
 	let username = props.username;
+
+  const navigate = useNavigate();
 
   const [post, setPost] = useState({
     author: username,
@@ -44,6 +47,7 @@ function submitPost(event){
       }
   }).then((res) => {
     console.log(res.data);
+    navigate(`/forum?topic=${encodeURIComponent(post.topic.toUpperCase())}`);
     window.location.reload();
   }).catch((err) =>{
       console.log(err);
