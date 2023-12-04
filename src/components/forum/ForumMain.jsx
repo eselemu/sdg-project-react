@@ -8,7 +8,7 @@ import Post from "./Post";
 import './Forum.css';
 
 function ForumMain() {
-  let username = "eselemu";
+  const username = localStorage.getItem('usernameSaludDigna');
   const [shownTopic, setShownTopic] = useState("HEALTH");
   const [posts, setPosts] = useState([]);
   const [searchParams] = useSearchParams();

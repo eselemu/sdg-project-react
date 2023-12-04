@@ -33,7 +33,7 @@ const CommentSchema = new mongoose.Schema({
   content: String,
   createdAt: { type: Date, default: Date.now } // or Date
 });
-CommentSchema.set("strictQuery", true); 
+CommentSchema.set("strictQuery", true);
 
 const PostSchema = new mongoose.Schema({
   author: String,
@@ -43,18 +43,25 @@ const PostSchema = new mongoose.Schema({
   comments: [CommentSchema], // This is an array of Comment subdocuments
   createdAt: { type: Date, default: Date.now } // or Date
 });
-PostSchema.set("strictQuery", true); 
+PostSchema.set("strictQuery", true);
 
 const TopicSchema = new mongoose.Schema({
   topic: String,
 });
-TopicSchema.set("strictQuery", true); 
+TopicSchema.set("strictQuery", true);
 
 const Post = mongoose.model("Post", PostSchema);
 const Topic = mongoose.model("Topic", TopicSchema);
 
-const userFilePath = "./data/user.json";
-//const user = require(userFilePath);
+const UserSchema = new mongoose.Schema({
+  name: String,
+  username: String,
+  email: String,
+  password: String,
+});
+UserSchema.set("strictQuery", true);
+
+const User = mongoose.model("User", UserSchema);
 
 app.route("/")
   .get((req, res) => {
@@ -64,58 +71,47 @@ app.route("/")
     res.redirect("/");
   });
 
-app.route("/signup")
-  .get((req, res) => {
-    res.render("login_singup", { action: 'signup' });
-  })
-  .post((req, res) => {
-    // Recopila los datos del formulario de registro
-    const newUser = {
-      name: req.body.name,
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-    };
-
-    // Verifica si el usuario ya existe
-    const userExists = user.some(user => user.username === newUser.username);
-
+  app.route("/signup")
+  .post(async (req, res) => {
+    const { username, email } = req.body.user;
+    // Check if the username or email already exists
+    const userExists = await User.findOne({ $or: [{ username }, { email }] }).exec();
+    
     if (userExists) {
-      return res.status(400).send("User already exists");
+      // If user exists, send a conflict status code
+      res.status(409).json({ message: "Username or email already registered." });
+    } else {
+      // If user does not exist, create a new user
+      const newUser = new User({
+        name: req.body.user.name,
+        username,
+        email,
+        password: req.body.user.password,
+      });
+      await newUser.save();
+      res.status(201).json(newUser);
     }
-
-    // Agrega el nuevo usuario al array
-    user.push(newUser);
-
-    // Guarda los usuarios en el archivo JSON
-    fs.writeFile(userFilePath, JSON.stringify(user, null, 2), 'utf8', (err) => {
-      if (err) {
-        console.error('Error writing users:', err);
-        return res.status(500).send('Server Error');
-      }
-      req.session.username = newUser.username; // Inicia sesión al usuario registrado
-      res.redirect("/forum");
-    });
   });
 
-app.route("/login")
-  .get((req, res) => {
-    res.render("login_singup", { action: 'login' });
-  })
-  .post((req, res) => {
-    const inputUsername = req.body.username;
-    const inputPassword = req.body.password;
+  app.route("/login")
+  .post(async (req, res) => {
+    const { username, password } = req.body.user;
 
-    // Verifica las credenciales del usuario
-    //const user = user.find(user => user.username === inputUsername);
-    const foundUser = user.find(u => u.username === inputUsername);
+    // Attempt to find the user by username
+    const userDB = await User.findOne({
+      $or: [
+        { username: username },
+        { email: username }
+      ]
+    }).exec();
+    
 
-
-    if (foundUser && foundUser.password === inputPassword) {
-      req.session.username = inputUsername; // Inicia sesión al usuario
-      res.redirect("/forum");
+    if (userDB && userDB.password === password) {
+      // If user is found and password matches, handle login success
+      res.status(200).json({ message: "Login successful", userDB });
     } else {
-      res.status(401).send("Login failed");
+      // If user is not found or password does not match, send an unauthorized status code
+      res.status(401).json({ message: "Invalid username or password" });
     }
   });
 
@@ -134,16 +130,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-//Filtered posts depending on the topic
-
-app.route("/forum")
-  .get((req, res) => {
-    //Filter the posts depending on the topic
-    filteredPosts = posts.filter(post => post.topic === currTopic);
-    // Render your EJS template with the filtered posts
-    res.render("forum", { posts: filteredPosts, username: req.session.username, currTopic: currTopic, topics: topics.topics });
-  });
-
 app.post('/postForum', upload.single('image'), async (req, res) => {
   const topic = req.body.topic.toUpperCase();
   const content = req.body.content;
@@ -157,10 +143,10 @@ app.post('/postForum', upload.single('image'), async (req, res) => {
     comments: [],//Comments array, by default the post doesnt have any
   });
 
-  
+
   var existingTopic = await Topic.findOne({ topic: topic }).exec();
 
-  if(!existingTopic){
+  if (!existingTopic) {
     const newTopic = new Topic({
       topic: topic,
     });
@@ -202,8 +188,8 @@ app.post('/postComment', async (req, res) => {
 
 app.post('/getPosts', async (req, res) => {
   const topic = req.body.topic;
-  let postsDB = await Post.find({topic: topic}).sort({createdAt: -1}).exec();
-  if(!postsDB && postsDB === 0){
+  let postsDB = await Post.find({ topic: topic }).sort({ createdAt: -1 }).exec();
+  if (!postsDB && postsDB === 0) {
     res.status(401).send("Error while extracting posts from database");
   }
   res.status(200).json(postsDB);

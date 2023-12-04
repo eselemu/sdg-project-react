@@ -1,5 +1,5 @@
 import './App.css';
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
@@ -22,7 +22,7 @@ function App() {
         <Route path = "/" element = {<IndexMain />} />
         <Route path = "/login" element = {<LoginSignUpMain />} />
         <Route path = "/newsletter" element = {<NewsletterMain news={news} />} />
-        <Route path = "/forum" element = {<ForumMain />} />
+        <Route path = "/forum" element = {localStorage.getItem('usernameSaludDigna') ? <ForumMain /> : <Navigate to = "/login" />} />
         <Route path = "/videogame" element = {<VideoGameMain />} />
       </Routes>
 

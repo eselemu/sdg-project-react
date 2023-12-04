@@ -5,7 +5,7 @@ import axios from "axios";
 import './Forum.css';
 
 function ModalPost(props) {
-	let username = props.username;
+  let username = props.username;
 
   const navigate = useNavigate();
 
@@ -13,50 +13,50 @@ function ModalPost(props) {
     author: username,
     topic: "",
     content: "",
-});
+  });
 
-function fieldListener(event) {
+  function fieldListener(event) {
     const { value, name } = event.target;
     setPost((prevValue) => {
-        return {
-            ...prevValue,
-            [name]: value,
-        };
+      return {
+        ...prevValue,
+        [name]: value,
+      };
     });
-}
+  }
 
-function submitPost(event){
-  event.preventDefault();
-  
-  // Create a new FormData instance
-  var formData = new FormData();
-  
-  // Append the string data
-  formData.append('author', post.author);
-  formData.append('topic', post.topic);
-  formData.append('content', post.content);
-  
-  // Append the file
-  // This assumes that you have a reference to the file input DOM node
-  var imagefile = document.querySelector('#formFile');
-  formData.append("image", imagefile.files[0]);
-  
-  axios.post("/postForum", formData, {
+  function submitPost(event) {
+    event.preventDefault();
+
+    // Create a new FormData instance
+    var formData = new FormData();
+
+    // Append the string data
+    formData.append('author', post.author);
+    formData.append('topic', post.topic);
+    formData.append('content', post.content);
+
+    // Append the file
+    // This assumes that you have a reference to the file input DOM node
+    var imagefile = document.querySelector('#formFile');
+    formData.append("image", imagefile.files[0]);
+
+    axios.post("/postForum", formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
-  }).then((res) => {
-    console.log(res.data);
-    navigate(`/forum?topic=${encodeURIComponent(post.topic.toUpperCase())}`);
-    window.location.reload();
-  }).catch((err) =>{
+    }).then((res) => {
+      console.log(res.data);
+      navigate(`/forum?topic=${encodeURIComponent(post.topic.toUpperCase())}`);
+      window.location.reload();
+    }).catch((err) => {
       console.log(err);
       alert("Error creating post: " + err.message);
-  });
-}
+    });
+  }
 
-	return (
-		<div>
+  return (
+    <div>
       <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">
           <form action="/postForum" method="POST" encType="multipart/form-data" onSubmit={submitPost}>
@@ -82,7 +82,7 @@ function submitPost(event){
                         <input type="text" name="topic" className="form-control" id="exampleFormControlInput1" placeholder="Topic" onChange={fieldListener} required />
                       </div>
                       <div className="mb-3">
-                        <textarea name="content" className="form-control" id="exampleFormControlTextarea1" placeholder="What's on your mind?" rows="4" onChange={fieldListener} required/>
+                        <textarea name="content" className="form-control" id="exampleFormControlTextarea1" placeholder="What's on your mind?" rows="4" onChange={fieldListener} required />
                       </div>
                       <div className="mb-3">
                         <label htmlFor="formFile" className="form-label">Upload a picture</label>
@@ -101,7 +101,7 @@ function submitPost(event){
         </div>
       </div>
     </div>
-	);
+  );
 }
 
 export default ModalPost;
