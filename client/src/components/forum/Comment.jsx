@@ -1,7 +1,7 @@
 import React from "react";
 
 import './Forum.css';
-
+/* Comment component, it receives a comment from the props and renders according to its content*/
 function Comment(props) {
 	let comment = props.comment;
 	return (

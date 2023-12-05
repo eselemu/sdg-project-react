@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 import './Forum.css';
-
+//Modal component that is tiggered when the user wants to post, it saves the post on mongo db through our express server
 function ModalPost(props) {
   let username = props.username;
 
   const navigate = useNavigate();
 
+  //Field listener and useState for our post
   const [post, setPost] = useState({
     author: username,
     topic: "",
@@ -25,6 +26,7 @@ function ModalPost(props) {
     });
   }
 
+  //Function that uploads the post on mongodb through our express server
   function submitPost(event) {
     event.preventDefault();
 
@@ -37,12 +39,12 @@ function ModalPost(props) {
     formData.append('content', post.content);
 
     // Append the file
-    // This assumes that you have a reference to the file input DOM node
     var imagefile = document.querySelector('#formFile');
     formData.append("image", imagefile.files[0]);
 
     var apiPath = "";
 
+    //Use of apiPath if the website is on production
     if (process.env.NODE_ENV === "production") {
 
       apiPath = "/api";

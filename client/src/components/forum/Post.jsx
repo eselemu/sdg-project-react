@@ -4,7 +4,7 @@ import axios from 'axios';
 import Comment from "./Comment";
 
 import './Forum.css';
-
+//Post component it recives a post and renders its content as its comments
 function Post(props) {
 	let post = props.post;
 
@@ -13,12 +13,12 @@ function Post(props) {
 	function fieldListener(event) {
 		setCommentContent(event.target.value);
 	}
-
+	//Function that submits the comment to mongo db through our express server
 	async function commentSubmit(event) {
 		event.preventDefault();
 		setCommentContent("");
 		var apiPath = "";
-
+		//Use of apiPath depending if it is on production or test
 		if (process.env.NODE_ENV === "production") {
 
 			apiPath = "/api";
@@ -35,7 +35,7 @@ function Post(props) {
 			console.error("Error in axios call: " + err.message);
 		}
 	}
-
+	//Foreach comment in the post it renders it respective comment component
 	function mapComments() {
 		if (post.comments) {
 			return post.comments.map((comment) => (
@@ -45,7 +45,7 @@ function Post(props) {
 		}
 		return undefined;
 	}
-
+	//format date to make it readable
 	function formatDate(dateString) {
 		const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
 		return new Intl.DateTimeFormat('en-US', options).format(new Date(dateString));
@@ -54,6 +54,7 @@ function Post(props) {
 	let renderedComments = mapComments();
 	return (
 		<div>
+			{/*Rendering of the post contents */}
 			<div class="post container containerVisual">
 				<div class="message">
 					<div class="row">
@@ -91,7 +92,7 @@ function Post(props) {
 						<br />
 					</div>
 				</div>
-
+				{/*Comments section of the post */}
 				<div className="comments">
 					{renderedComments}
 				</div>

@@ -2,6 +2,7 @@ import React from "react";
 
 import './VideoGameMain.css'
 
+//Simple front end component that showcases and explains the future videogame still in development
 function VideoGameMain() {
     return (
         <div className="container containerVisual mainVideoGame">

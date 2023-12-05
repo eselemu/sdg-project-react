@@ -1,3 +1,4 @@
+//Added dependencies
 const express = require('express');
 const bodyParser = require("body-parser");
 const session = require('express-session');
@@ -14,6 +15,7 @@ app.use(express.urlencoded());
 app.use(express.json());
 app.use(express.static("public"));
 
+//Use of session
 app.use(session({
   secret: 'your-secret-key',
   resave: true,
@@ -26,8 +28,7 @@ const mongoPassword = process.env.DB_PASS;
 const mongoPostUrl = `mongodb+srv://${mongoUser}:${mongoPassword}@cluster0.6iz2suz.mongodb.net/post?retryWrites=true&w=majority`;
 mongoose.connect(mongoPostUrl, { useNewUrlParser: true, useUnifiedTopology: true }); //Structure or our schema, every parameter is a column
 
-//Use of schemas
-
+//Declaration of used schemas
 const CommentSchema = new mongoose.Schema({
   author: String,
   content: String,
@@ -63,20 +64,13 @@ UserSchema.set("strictQuery", true);
 
 const User = mongoose.model("User", UserSchema);
 
-app.route("/")
-  .get((req, res) => {
-    res.render("index");
-  })
-  .post((req, res) => {
-    res.redirect("/");
-  });
-
-  app.route("/signup")
+//Sign Up endpoint, it receives a username to register, if it alredy exists it return error, if not is saved on our mongodb
+app.route("/signup")
   .post(async (req, res) => {
     const { username, email } = req.body.user;
     // Check if the username or email already exists
     const userExists = await User.findOne({ $or: [{ username }, { email }] }).exec();
-    
+
     if (userExists) {
       // If user exists, send a conflict status code
       res.status(409).json({ message: "Username or email already registered." });
@@ -93,7 +87,8 @@ app.route("/")
     }
   });
 
-  app.route("/login")
+  //Login endpoint, it checks if theres a user with the credentials provided on our mongodb, and returns the logged user or the error
+app.route("/login")
   .post(async (req, res) => {
     const { username, password } = req.body.user;
 
@@ -104,7 +99,7 @@ app.route("/")
         { email: username }
       ]
     }).exec();
-    
+
 
     if (userDB && userDB.password === password) {
       // If user is found and password matches, handle login success
@@ -122,7 +117,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const storage = multer.diskStorage({
   destination: 'uploads/', // Specify the directory for storing uploaded images
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);//Random and unique name for the image
     const extension = path.extname(file.originalname);
     cb(null, file.fieldname + '-' + uniqueSuffix + extension);
   },
@@ -130,6 +125,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+//Post endpoint, it receives a post along with its image, the uploads the posts on mongodb, if the topic is new, it also creates a new topic on mongodb
 app.post('/postForum', upload.single('image'), async (req, res) => {
   const topic = req.body.topic.toUpperCase();
   const content = req.body.content;
@@ -146,6 +142,7 @@ app.post('/postForum', upload.single('image'), async (req, res) => {
 
   var existingTopic = await Topic.findOne({ topic: topic }).exec();
 
+  //If the topic doesnt exists it creates a new one
   if (!existingTopic) {
     const newTopic = new Topic({
       topic: topic,
@@ -158,10 +155,11 @@ app.post('/postForum', upload.single('image'), async (req, res) => {
   res.status(200).json(newPost);
 });
 
+//Comment endpoint, it receives a comment an changes the comments array of the post from which te comment is from in mongodb
 app.post('/postComment', async (req, res) => {
   const author = req.body.author;
   const content = req.body.content;
-  const postId = req.body.post._id; // Assuming you're sending the post's id in the request
+  const postId = req.body.post._id;
   const newComment = {
     author: author,
     content: content,
@@ -185,7 +183,7 @@ app.post('/postComment', async (req, res) => {
   }
 });
 
-
+//Getposts endpoint, it returns te posts from a specific topic received in the request
 app.post('/getPosts', async (req, res) => {
   const topic = req.body.topic;
   let postsDB = await Post.find({ topic: topic }).sort({ createdAt: -1 }).exec();
@@ -202,6 +200,7 @@ app.route("/newsletter")
     res.render("newsletter", { news: news });
   });
 
+  //NewNews end point, it receives the new to upload and uploads it
 app.post('/newNews', upload.single('Image'), (req, res) => {
   console.log(req.body.Title);
   const title = req.body.Title;
@@ -211,7 +210,6 @@ app.post('/newNews', upload.single('Image'), (req, res) => {
   const newDataToAppend = {
     Image: req.file ? `/uploads/${req.file.filename}` : null,//Here if a file is received then it will save in the json object the route to teh alredy uploaded img in uploads
     Author: "",
-    // New author needs the database of users, thats why it is empty
     Title: title,
     Text: text,
     URL: url,
@@ -228,20 +226,13 @@ app.post('/newNews', upload.single('Image'), (req, res) => {
 
   res.redirect('/newsletter');
 });
-
-app.route("/videogame")
-  .get((req, res) => {
-    res.render("videogame");
-  })
-  .post((req, res) => {
-    res.redirect("/");
-  });
+;
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("There was an error in the app");
 });
-
+//Selection of port depending if its productin or test
 const PORT = process.env.PORT || 5000;
-
+//Listening of the specified port
 app.listen(PORT, () => console.log(`Server started port ${PORT}`));

@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 import './LoginSignupMain.css';
 
+//Component that is in charge of both log in and sign up
 function LoginSignUpMain() {
+    //Use state for both login and signup forms
     const [signUpForm, setSignUp] = useState({
         name: "",
         username: "",
@@ -18,7 +20,7 @@ function LoginSignUpMain() {
     });
 
     const navigate = useNavigate();
-
+    //Field listener for sign up
     function signUpFieldListener(event) {
         const { value, name } = event.target;
         setSignUp((prevValue) => {
@@ -28,7 +30,7 @@ function LoginSignUpMain() {
             };
         });
     }
-
+    //field listener for login
     function logInFieldListener(event) {
         const { value, name } = event.target;
         setLogIn((prevValue) => {
@@ -38,11 +40,11 @@ function LoginSignUpMain() {
             };
         });
     }
-
+    //Function that sends the credentials to our express server and receives a confirmation or an error
     async function logIn(event) {
         event.preventDefault();
         var apiPath = "";
-
+        //Use of apiPath if the webpage is deployed
         if (process.env.NODE_ENV === "production") {
 
             apiPath = "/api";
@@ -63,11 +65,11 @@ function LoginSignUpMain() {
             alert("Error: " + errorMessage);
         }
     }
-
+    //Function that registers the user on mongodb through our express server, if the username or email alredy exists it returns an error
     async function signUp(event) {
         event.preventDefault();
         var apiPath = "";
-
+        //Use of apiPath if the webpage is deployed
         if (process.env.NODE_ENV === "production") {
 
             apiPath = "/api";
@@ -92,6 +94,7 @@ function LoginSignUpMain() {
     return (
         <div className="cont loginSignupMain">
             <div className="form-box">
+                {/*Log In container */}
                 <div className="login-container" id="login">
                     <div className="top">
                         <span>Don't have an account? <a href="#register">Sign Up</a></span>
@@ -111,6 +114,7 @@ function LoginSignUpMain() {
                         </div>
                     </form>
                 </div>
+                {/*Sign Up container */}
                 <div className="register-container" id="register">
                     <div className="top">
                         <span>Have an account? <a href="#login">Login</a></span>

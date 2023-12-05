@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 
 import './newsletter.css';
 
+//Newsletter component that shows the news uploaded by our administrators
+
 function NewsletterMain({ news }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (!news) {
     return (<div>Loading news...</div>);
   }
-
+  //Handling of carousel prev and next buttons
   const handlePrev = () => {
     setActiveIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : news.length - 1));
   };

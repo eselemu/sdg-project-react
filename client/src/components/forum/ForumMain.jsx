@@ -6,17 +6,21 @@ import ModalPost from "./ModalPost";
 import Post from "./Post";
 
 import './Forum.css';
+/*Main component of the forum, it renders the searchbar and the posts*/
 
 function ForumMain() {
+  //Declaration of user, shownTopic and posts
   const username = localStorage.getItem('usernameSaludDigna');
   const [shownTopic, setShownTopic] = useState("HEALTH");
   const [posts, setPosts] = useState([]);
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();//To get if a specific topic must be shown
 
   // Use a state to track the current topic
-  const [currTopic, setCurrTopic] = useState(searchParams.get('topic') || "HEALTH");
+  const [currTopic, setCurrTopic] = useState(searchParams.get('topic') || "HEALTH");//If there arent no parameters, by default the topic is HEALTH
 
+  //Function that receives the posts of the current Topic from the express server through an axios call
   const getPosts = async () => {
+    //Use if apiPath depending if the website is in production
     var apiPath = "";
 
     if (process.env.NODE_ENV === "production") {
@@ -35,13 +39,13 @@ function ForumMain() {
       console.error("Error in axios call: " + err.message);
     }
   };
-
+  //To render after both functions have ran
   useEffect(() => {
     getPosts();
     setShownTopic(currTopic);
   }, []);
 
-
+  //For each post it creates a post component
   function mapPosts() {
     if (posts) {
       return posts.map((post) => (
@@ -68,15 +72,15 @@ function ForumMain() {
   function handleTopicChange(event){
     setCurrTopic(event.target.value.toUpperCase());
   }
-
+  //rendered posts is the result of the map function
   let renderedPosts = mapPosts();
 
   return (
 
       <div className="forumMain">
-
+        {/* Modal component, activated when the user wants to make a new post*/}
         <ModalPost username={username} setTopic={setCurrTopic} reloadPosts = {resetTopicForum}/>
-
+        {/*Search topic component in which a new topic is selected */}
         <div className="container containerVisual">
           <div className="row">
             <div className="col-7 col-sm-10">
@@ -101,7 +105,7 @@ function ForumMain() {
             </div>
           </div>
         </div>
-
+        {/* Finally all the posts from the topic are shown*/}
         {renderedPosts}
 
       </div>

@@ -1,7 +1,7 @@
 import React from "react";
 
 import './IndexMain.css';
-
+//Simple frontend component that works as introduction to our webpage
 function IndexMain() {
     return (
         <div className="container mainContainer indexContainer">

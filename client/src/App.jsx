@@ -15,7 +15,7 @@ function App() {
   const news = require('./news.json');
   return (
     <div className="App">
-      
+      {/*Depending on the route is the component that is going to be rendered, if the user is not logged it cant access the forum component*/}
       <NavBar />
 
       <Routes>
