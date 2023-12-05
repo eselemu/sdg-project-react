@@ -41,13 +41,20 @@ function LoginSignUpMain() {
 
     async function logIn(event) {
         event.preventDefault();
+        var apiPath = "";
+
+        if (process.env.NODE_ENV === "production") {
+
+            apiPath = "/api";
+
+        }
         try {
-            const response = await axios.post('/login', { user: logInForm });
+            const response = await axios.post(apiPath + '/login', { user: logInForm });
             if (response.status === 200) {
                 localStorage.setItem('usernameSaludDigna', response.data.userDB.username);
                 navigate('/forum');
                 alert(response.data.message);
-            } 
+            }
         } catch (err) {
             const errorMessage = err.response && err.response.data && err.response.data.message
                 ? err.response.data.message
@@ -59,12 +66,19 @@ function LoginSignUpMain() {
 
     async function signUp(event) {
         event.preventDefault();
+        var apiPath = "";
+
+        if (process.env.NODE_ENV === "production") {
+
+            apiPath = "/api";
+
+        }
         try {
-            const response = await axios.post('/signup', { user: signUpForm });
+            const response = await axios.post(apiPath + '/signup', { user: signUpForm });
             if (response.status === 201) {
                 localStorage.setItem('usernameSaludDigna', response.data.username);
                 navigate('/forum');
-            } 
+            }
         } catch (err) {
             const errorMessage = err.response && err.response.data && err.response.data.message
                 ? err.response.data.message

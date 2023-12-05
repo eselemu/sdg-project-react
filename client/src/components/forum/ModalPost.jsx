@@ -41,7 +41,15 @@ function ModalPost(props) {
     var imagefile = document.querySelector('#formFile');
     formData.append("image", imagefile.files[0]);
 
-    axios.post("/postForum", formData, {
+    var apiPath = "";
+
+    if (process.env.NODE_ENV === "production") {
+
+      apiPath = "/api";
+
+    }
+
+    axios.post(apiPath + "/postForum", formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

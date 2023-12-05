@@ -10,23 +10,30 @@ function Post(props) {
 
 	const [commentContent, setCommentContent] = useState("");
 
-	function fieldListener(event){
+	function fieldListener(event) {
 		setCommentContent(event.target.value);
 	}
 
-	async function commentSubmit(event){
+	async function commentSubmit(event) {
 		event.preventDefault();
 		setCommentContent("");
+		var apiPath = "";
+
+		if (process.env.NODE_ENV === "production") {
+
+			apiPath = "/api";
+
+		}
 		try {
-			const response = await axios.post('/postComment', { author: props.username, content: commentContent, post: post });
+			const response = await axios.post(apiPath + '/postComment', { author: props.username, content: commentContent, post: post });
 			if (response.status === 200) {
 				props.reloadPosts();
 			} else {
-			  console.error("Error while extracting posts from database: " + response.status);
+				console.error("Error while extracting posts from database: " + response.status);
 			}
-		  } catch (err) {
+		} catch (err) {
 			console.error("Error in axios call: " + err.message);
-		  }
+		}
 	}
 
 	function mapComments() {
@@ -42,7 +49,7 @@ function Post(props) {
 	function formatDate(dateString) {
 		const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
 		return new Intl.DateTimeFormat('en-US', options).format(new Date(dateString));
-	  }
+	}
 
 	let renderedComments = mapComments();
 	return (
@@ -75,7 +82,7 @@ function Post(props) {
 						</div>
 						<div className="col-10 col-xl-11">
 							<form action="/" method="POST" onSubmit={commentSubmit}>
-								<input name="postComment" className="form-control form-control-sm" type="text" placeholder="Write a public comment" aria-label=".form-control-sm example" onChange={fieldListener} value={commentContent}/>
+								<input name="postComment" className="form-control form-control-sm" type="text" placeholder="Write a public comment" aria-label=".form-control-sm example" onChange={fieldListener} value={commentContent} />
 								<button type="submit" className="btn btn-primary btn-addpost" hidden>PUBLISH</button>
 							</form>
 						</div>

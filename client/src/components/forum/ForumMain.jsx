@@ -17,8 +17,15 @@ function ForumMain() {
   const [currTopic, setCurrTopic] = useState(searchParams.get('topic') || "HEALTH");
 
   const getPosts = async () => {
+    var apiPath = "";
+
+    if (process.env.NODE_ENV === "production") {
+
+      apiPath = "/api";
+
+    }
     try {
-      const response = await axios.post('/getPosts', { topic: currTopic.toUpperCase() });
+      const response = await axios.post(apiPath + '/getPosts', { topic: currTopic.toUpperCase() });
       if (response.status === 200) {
         setPosts(response.data);
       } else {
