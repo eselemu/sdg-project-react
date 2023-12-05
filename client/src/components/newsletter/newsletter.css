@@ -35,6 +35,7 @@ body{
     background-color: var(--extra);
     position: relative;
 }
+
 #MasterContainer{
     position: relative;
     z-index: 10;
@@ -74,6 +75,16 @@ body{
     background-color: var(--fakeWhite);
 }
 @media (max-width: 576px) {
+    .carousel-control-prev-icon{
+        visibility: visible;
+        background-color: var(--extra);
+        position: relative;
+    }
+    .carousel-control-next-icon{
+        visibility: visible;
+        background-color: var(--extra);
+        position: relative;
+    }
     .nonCellphoneCompatible{
         display: none ;
     }
@@ -90,6 +101,7 @@ body{
         position: relative;
         width: 100%;
         height: auto;
+        z-index: 1;
     }
     #enchilada img{
         top: 0;
@@ -99,6 +111,16 @@ body{
 }
 
 @media (min-width: 576px) and (max-width: 767px){
+    .carousel-control-prev-icon{
+        visibility: visible;
+        background-color: var(--extra);
+        position: relative;
+    }
+    .carousel-control-next-icon{
+        visibility: visible;
+        background-color: var(--extra);
+        position: relative;
+    }
     #enchilada{
         height: auto;
     }
@@ -110,6 +132,7 @@ body{
         position: relative;
         width: 100%;
         height: auto;
+        z-index: 1;
     }
     #enchilada img{
         width: 100%;
@@ -237,6 +260,21 @@ body{
         right: 0;
     }
 }
+
+.btn-purple{
+    background-color: var(--complementario);
+    border-color: var(--complementario);
+}
+
+
+.btn-purple:hover,
+.btn-purple:active,
+.btn-purple:disabled {
+    background-color: var(--complementary02);
+    border-color: var(--complementary02);
+    color: #fff; /* Set text color for better visibility on the background */
+    outline: none; /* Remove the blue outline when focused (optional) */
+}
 /* 
 // X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
@@ -244,13 +282,11 @@ body{
         visibility: visible;
         background-color: var(--extra);
         position: relative;
-        left: -9rem;
     }
     .carousel-control-next-icon{
         visibility: visible;
         background-color: var(--extra);
         position: relative;
-        right: -9rem;
     }
     #navbarLostSpace{
         position: relative;

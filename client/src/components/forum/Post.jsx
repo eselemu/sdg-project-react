@@ -12,7 +12,7 @@ function Post(props) {
 
 	function fieldListener(event){
 		setCommentContent(event.target.value);
-	  }
+	}
 
 	async function commentSubmit(event){
 		event.preventDefault();

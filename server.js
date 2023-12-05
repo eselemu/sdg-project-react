@@ -242,6 +242,6 @@ app.use((err, req, res, next) => {
   res.status(500).send("There was an error in the app");
 });
 
-app.listen(5000, () => {
-  console.log("Listening Port 5000");
-});
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log(`Server started port ${PORT}`));
