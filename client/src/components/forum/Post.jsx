@@ -68,7 +68,7 @@ function Post(props) {
 						{
 							post.image != null && (
 								<div className="col-12 d-flex justify-content-center align-items-center">
-									<img src={post.image} alt="Default profile" className="img-post" />
+									<img src={process.env.NODE_ENV === "production" ? "/api"  + post.image : post.image} alt="Default profile" className="img-post" />
 								</div>
 							)
 						}
